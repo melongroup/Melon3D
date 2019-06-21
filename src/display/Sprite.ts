@@ -1,6 +1,7 @@
 import { DisplayObject } from "./DisplayObject.js";
 import { Graphics } from "./Graphics.js";
 import { vertex_ui_variable } from "./stage3D/Geometry.js";
+import { BitmapSource } from "./source/BitmapSource.js";
 
 export class Sprite extends DisplayObject{
 
@@ -16,6 +17,8 @@ export class Sprite extends DisplayObject{
 
     $graphics:Graphics;
     variables:IVariables;
+
+    source:BitmapSource;
 
     constructor(variables?:IVariables){
         super();

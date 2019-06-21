@@ -129,10 +129,10 @@ declare interface IMatrixComposeData{
 }
 
 declare interface IMatrix extends IArrayBase {
-    m2_identity();
+    m2_identity():void;
     m2_append(m2: ArrayLike<number> | IArrayBase, prepend?: boolean, from?: ArrayLike<number>):IMatrix;
-    m2_scale(scalex:number,scaley:number);
-    m2_rotate(angle:number);
+    m2_scale(scalex:number,scaley:number):void;
+    m2_rotate(angle:number):void;
     m2_transformVector(v: IVector3D | number[], result?: IVector3D | number[]);
     m2_decompose(result?:IMatrixComposeData):IMatrixComposeData;
     m2_recompose(value:IMatrixComposeData):IMatrix;
@@ -234,4 +234,10 @@ declare interface IGeometry{
     vertex:Float32Array;
     data32PerVertex: number;
     variables: IVariables;
+}
+
+
+declare interface IBatchRendererSetting{
+    vc:number;
+    source:number;
 }

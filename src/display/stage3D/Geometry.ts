@@ -57,6 +57,13 @@ export let empty_float32_object:{ [key: string]: Float32Array } = {
     "color":empty_float32_color
 }
 
+export let empty_number_object:{[key:string]:number[]}={
+    "pos":new Array<number>(3),
+    "normal":new Array<number>(3),
+    "uv":new Array<number>(4),
+    "color":new Array<number>(4)
+}
+
 /**
  * pos:Float32Array
  * noraml:Float32Array
@@ -90,6 +97,47 @@ export function createGeometry(data:{ [key: string]: Float32Array },variables:IV
     }
     return result;
 } 
+
+
+export function geometry_getVariableValue(key:string){
+    let arr = empty_number_object[key];
+    if(!arr){
+        empty_number_object[key] = new Array<number>(4);
+    }
+    return arr;
+}
+
+export function geometry_addpoint(geometry: IGeometry,value:{[key:string]:number[]}){
+    let{numVertices,variables}=geometry;
+
+    function set(variable:IVariable,array:Float32Array,data:number[]){
+        if(undefined == data || undefined == variable){
+            return;
+        }
+        let size = variable.size;
+        let offset = numVertices * size
+        if(data.length <= size){
+            array.set(data,offset)
+        }else{
+            array.set(data.slice(0,size),offset);
+        }
+    }
+
+    for (const key in variables) {
+        if(key == "data32PerVertex") continue;
+        let data = value[key];
+        const variable = variables[key];
+        if(data && data.length >= variable.size){
+            let array = empty_float32_object[key];
+            if(!array){
+                empty_float32_object[key] = array = new Float32Array(variable.size * EMPTY_MAX_NUMVERTICES);
+            }
+            set(variable,array,data);
+        }
+    }
+    
+    geometry.numVertices ++;
+}
 
 
 export class VertexInfo implements IGeometry {
