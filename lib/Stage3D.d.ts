@@ -230,6 +230,7 @@ declare interface ITextureSetting{
 
 
 declare interface IGeometry{
+    preNumVertices?:number;
     numVertices:number
     vertex:Float32Array;
     data32PerVertex: number;
@@ -240,4 +241,10 @@ declare interface IGeometry{
 declare interface IBatchRendererSetting{
     vc:number;
     source:number;
+}
+
+declare interface IRenderOption{
+    now:number;
+    interval:number;
+    rect:Size;
 }
