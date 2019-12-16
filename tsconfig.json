@@ -8,8 +8,8 @@
     
     "outDir": "./bin-debug/",
     "watch": true,
-
-    "rootDir": "./src/",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "experimentalDecorators": true,
+    "rootDir": "../",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
    
     "lib": [
       "es5",
@@ -20,7 +20,9 @@
   ,
   "include": [
     "src/**/*", 
-    "lib/*"
+    "lib/**/*",
+    "../**/*",
+    "../../lib/**/*"
   ],
   "exclude": [
     "reference",
