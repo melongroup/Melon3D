@@ -7,12 +7,12 @@ import { tweenUpdate } from "./core/Tween.js";
 import { Mouse } from "./display/Mouse.js";
 import { Sprite } from "./display/Sprite.js";
 import { IStageRenderOption } from "./display/stage3D/Renderer.js";
-import { context3D, ROOT, Stage3D } from "./display/stage3D/Stage3D.js";
+import { context3D, ROOT, Stage3D, camera } from "./display/stage3D/Stage3D.js";
 import { addResize, Engine } from "./Engine.js";
 
 
 
-export var renderOption = { now: 0, interval: 0, shaderParmas: [], lightDirection: newVector3D(0, 1, -1, 1) } as IStageRenderOption;
+export var renderOption = { now: 0, interval: 0, shaderParmas: [], lightDirection: newVector3D(1, 1, -1, 1) } as IStageRenderOption;
 
 export class App extends Sprite {
 
@@ -78,7 +78,14 @@ export class App extends Sprite {
         renderOption.now = now;
         renderOption.interval = interval;
 
-        renderOption.lightDirection.v3_normalize();
+        let lightDirection = renderOption.lightDirection;
+        lightDirection[0] = camera.x;
+        lightDirection[1] = camera.y;
+        lightDirection[2] = camera.z;
+
+        lightDirection.v3_normalize();
+        // lightDirection[1] += 1.0;
+        // lightDirection.v3_normalize();
 
 
         ROOT.render(renderOption);

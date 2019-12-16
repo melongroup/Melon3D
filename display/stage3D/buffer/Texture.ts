@@ -7,6 +7,8 @@ import { IContext3DSetting } from "../Context3D.js";
 import { EventX, EventT } from "../../../../melon_runtime/MiniDispatcher.js";
 import { engineNow } from "../../../../melon_runtime/Timer.js";
 
+export type TextureType = ImageBitmap | ImageData | HTMLVideoElement | HTMLImageElement | HTMLCanvasElement
+
 export class Texture extends Buffer3D {
     key: number | string;
     data: ITextureData;
@@ -14,7 +16,7 @@ export class Texture extends Buffer3D {
     width: number = 0;
     height: number = 0;
     // uv:number[];
-    pixels: ImageBitmap | ImageData | HTMLVideoElement | HTMLImageElement | HTMLCanvasElement | BitmapData;
+    pixels: TextureType | BitmapData;
     floatData: Uint8Array;
     constructor() {
         super();
@@ -315,7 +317,7 @@ export class CubeTexture extends Texture {
     files: string[] = ["nx", 'ny', 'nz', 'px', 'py', 'pz'];
 
     //nx, ny, nz, px, py, pz
-    cubePixels: (ImageBitmap | ImageData | HTMLVideoElement | HTMLImageElement | HTMLCanvasElement)[];
+    cubePixels: TextureType[];
 
     awaken(): boolean {
 
@@ -325,7 +327,7 @@ export class CubeTexture extends Texture {
 
         let data: HTMLCanvasElement[] = [];
 
-        let [nx, ny, nz, px, py, pz] = this.cubePixels as any;
+        let [nx, ny, nz, px, py, pz] = this.cubePixels as TextureType[];
 
         let { data: textureData } = this;
 

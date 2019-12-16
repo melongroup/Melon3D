@@ -13,12 +13,25 @@ import { CubeTexture, RTTexture, Texture } from "./buffer/Texture.js";
 import { VertexBuffer3D } from "./buffer/VertexBuffer3D.js";
 import { VertexInfo } from "./Geometry.js";
 import { gl } from "./Stage3D.js";
+import { EventT } from "../../../melon_runtime/MiniDispatcher.js";
 
 
 export var scissorRect: Size;
 export var contextMatrix3D = newMatrix3D();
 export var contextMatrix2D = newMatrix3D();
 export var contextInvMatrix = newMatrix3D();
+
+
+export function getTextureData(url: string, mipmap?: boolean, mag?: number, min?: number, repeat?: number, y?: boolean) {
+	let data = {} as ITextureData;
+	data.url = url;
+	data.mipmap = undefined != mipmap ? mipmap : false;
+	data.mag = undefined != mag ? mag : WebGLConst.LINEAR;
+	data.min = undefined != min ? min : WebGLConst.LINEAR;
+	data.wrapS = data.wrapT = undefined != repeat ? WebGLConst.REPEAT : WebGLConst.CLAMP_TO_EDGE;
+	data.key = `${url}_${data.mag}_${data.min}_${data.wrapS}_${data.wrapT}`
+	return data;
+}
 
 // export const enum Context3DCompareMode {
 // 	ALWAYS = 'always',
@@ -400,19 +413,6 @@ export class Context3D {
 
 	defauleMag: number = WebGLConst.NEAREST
 
-	getTextureData(url: string, mipmap?: boolean, mag?: number, min?: number, repeat?: number, y?: boolean) {
-		let { defauleMag } = this;
-		let data = {} as ITextureData;
-		data.url = url;
-		data.mipmap = undefined != mipmap ? mipmap : false;
-		data.mag = undefined != mag ? mag : defauleMag;
-		data.min = undefined != min ? min : defauleMag;
-		data.wrapT = data.wrapS = undefined != repeat ? repeat : WebGLConst.CLAMP_TO_EDGE;
-		data.key = `${url}_${mag}_${min}_${data.wrapS}_${data.wrapT}`
-		return data;
-	}
-
-
 
 	textureObj: { [key: string]: Texture } = {};
 
@@ -572,6 +572,10 @@ export class Context3D {
 			if (program == this.cProgram) return 1;
 		}
 
+		if(this.cProgram != program){
+
+		}
+
 		this.cProgram = program;
 		gl.useProgram(program.program);
 		return 0;
@@ -661,8 +665,6 @@ export class Context3D {
 
 
 
-
-
 	private attribs: { [key: number]: IAttrib } = {};
 	private textures: { [key: number]: IAttrib } = {};
 
@@ -699,7 +701,7 @@ export class Context3D {
 			attrib.enabled = false;
 		}
 
-		if (!attrib.enabled) {
+		if (!attrib.enabled || attrib.name != name) {
 			g.vertexAttribPointer(loc, variable.size, WebGLConst.FLOAT, false, data32PerVertex * 4, variable.offset * 4);
 			attrib.enabled = true;
 			if (!attrib.locused) {
@@ -758,6 +760,11 @@ export class Context3D {
 		let texture = this.textureObj[key];
 		if (!texture) {
 			let source = bitmapSources[url];
+
+			if(source.status != LoadStates.COMPLETE){
+				return false;
+			}
+
 			this.textureObj[key] = texture = this.createTexture(data, source.bmd);
 		}
 
@@ -793,9 +800,7 @@ export class Context3D {
 		}
 
 
-
-
-
+		return true;
 	}
 
 }

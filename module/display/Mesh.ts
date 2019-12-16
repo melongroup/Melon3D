@@ -1,8 +1,8 @@
-import { Sprite } from "../../display/Sprite.js";
-import { SingleRender } from "../render/SingleRender.js";
-import { Geometry } from "../../display/stage3D/Geometry.js";
 import { singleton } from "../../../melon_runtime/ClassUtils.js";
-import { PhongMaterial } from "../material/PhongMaterial.js";
+import { Sprite } from "../../display/Sprite.js";
+import { Geometry } from "../../display/stage3D/Geometry.js";
+import { SingleRender } from "../render/SingleRender.js";
+import { PBRMaterial } from "../material/BitmapMaterial.js";
 
 export class Mesh extends Sprite {
 
@@ -15,7 +15,7 @@ export class Mesh extends Sprite {
             this.data.geometryInstance = geometryInstance = new Geometry().setData(this.data.geometry);
         }
         renderer.geometry = geometryInstance;
-        renderer.material = singleton(PhongMaterial)
+        renderer.material = singleton(PBRMaterial)
     }
 
 

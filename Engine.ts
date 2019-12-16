@@ -6,7 +6,6 @@ import { newMatrix3D } from "./core/Matrix3D.js";
 
 
 export var pixelRatio = 1;
-
 //显示屏宽高
 export var sceneWidth: number = 0;
 export var sceneHeight: number = 0;

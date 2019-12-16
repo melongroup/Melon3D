@@ -650,7 +650,7 @@ declare interface IMaterialData {
 declare interface IMeshData {
     material: IMaterialData;
     geometry: IGeometry;
-    geometryInstance : any;
+    geometryInstance: any;
 }
 
 
@@ -716,4 +716,10 @@ declare interface IWebglParameterInfo {
     texture: number;
     precision: string;
 
+}
+
+declare interface IShaderCode {
+    def: string;
+    func: string;
+    code: string;
 }

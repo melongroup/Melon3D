@@ -18,9 +18,12 @@ export interface IStageRenderOption extends IRenderOption {
     program: Program3D;
     shaderParmas: IShaderParamTarget[];
 
+    renderer: Renderer
 
     cameraPos: IVector3D;
     lightDirection: IVector3D;
+    
+
 
     // ambientTexutre: BitmapSource;
     // diffTexutre: BitmapSource;
@@ -136,6 +139,10 @@ export class Renderer extends ShaderParamTarget {
         c.setProgram(program);
 
 
+        option.renderer = this;
+
+
+
         // updateUniforms
 
         let list = option.shaderParmas;
@@ -164,24 +171,24 @@ export class Renderer extends ShaderParamTarget {
         let { program } = option;
 
         forarr(option.shaderParmas, v => {
-            v.updateShaderProperty(option, program)
+            v.updateShaderProperty(option, program);
             return true;
         });
 
 
 
 
-        if (!program.runed) {
-            foreach(program.paramsInfo, v => {
-                if (!v.used) {
-                    console.error(`${v.tag} ${v.name} not used`);
+        // if (!program.runed) {
+        //     foreach(program.paramsInfo, v => {
+        //         if (!v.used) {
+        //             console.error(`${v.tag} ${v.name} not used`);
 
-                }
-                return true;
-            });
+        //         }
+        //         return true;
+        //     });
 
-            program.runed = true;
-        }
+        //     program.runed = true;
+        // }
 
 
 
@@ -189,10 +196,48 @@ export class Renderer extends ShaderParamTarget {
     }
 
 
+
+
+
+
+
+    updateShaderUniform(option: IStageRenderOption, info: IWebglActiveInfo) {
+        let name = info.name;
+
+        let data = this[name] ? this[name] : option[name];
+
+        let flag = true;
+
+        if (data === undefined) {
+            console.error(`${name} not set`);
+            flag = false;
+        } else {
+            let context = option.context;
+            if (info.len > 0) {
+                context.updateUniformData(info, data);
+            } else {
+                flag = context.updateTextureData(info, data);
+            }
+        }
+
+        return flag;
+    }
+
+
+    setMaterial(data: IMaterialData) {
+        foreach(data as any, (v, k) => {
+            this[k] = v;
+            return true;
+        })
+    }
+
+
+
+
     @UniformFunc("mvp")
     mvp(option: IStageRenderOption, info: IWebglActiveInfo): void {
-        let { camera, context } = option;
-        let { target } = this;
+        let { camera, context, renderer } = option;
+        let { target } = renderer;
         let matrix = TEMP_MATRIX3D;
         matrix.m3_append(camera.worldTranform, false, target.worldMatrix);
         context.updateUniformMatrixData(info, matrix);
@@ -201,8 +246,8 @@ export class Renderer extends ShaderParamTarget {
 
     @UniformFunc("mv")
     mv(option: IStageRenderOption, info: IWebglActiveInfo): void {
-        let { camera, context } = option;
-        let { target } = this;
+        let { camera, context, renderer } = option;
+        let { target } = renderer;
         let matrix = TEMP_MATRIX3D;
         matrix.m3_append(camera.worldMatrix, false, target.worldMatrix);
         context.updateUniformMatrixData(info, matrix);
@@ -217,8 +262,8 @@ export class Renderer extends ShaderParamTarget {
 
     @UniformFunc("m")
     m(option: IStageRenderOption, info: IWebglActiveInfo): void {
-        let { context } = option;
-        let { target } = this;
+        let { context, renderer } = option;
+        let { target } = renderer;
         // let matrix = TEMP_MATRIX3D;
         // matrix.m3_append(camera.worldTranform, false, target.worldMatrix);
         context.updateUniformMatrixData(info, target.worldMatrix);
@@ -248,36 +293,4 @@ export class Renderer extends ShaderParamTarget {
         let { context, camera } = option;
         context.updateUniformData(info, camera.originFar);
     }
-
-
-
-
-    updateShaderUniform(option: IStageRenderOption, info: IWebglActiveInfo) {
-        let name = info.name;
-
-        let data = this[name] ? this[name] : option[name];
-
-        if (data === undefined) {
-            console.error(`${name} not set`);
-        } else {
-            let context = option.context;
-            if (info.len > 0) {
-                context3D.updateUniformData(info, data);
-            } else {
-                context3D.updateTextureData(info, data);
-            }
-            return true;
-        }
-
-        return false;
-    }
-
-
-    setMaterial(data: IMaterialData) {
-        foreach(data as any, (v, k) => {
-            this[k] = v;
-            return true;
-        })
-    }
-
 }

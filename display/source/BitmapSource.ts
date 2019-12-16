@@ -1,10 +1,9 @@
-import { MiniDispatcher, EventX, EventT } from "../../../melon_runtime/MiniDispatcher.js";
-import { BitmapData, MaxRectsBinPack } from "../../core/BitmapData.js";
-import { Texture } from "../stage3D/buffer/Texture.js";
-import { ImageLoader, loadRes } from "../../core/Http.js";
 import { engineNow } from "../../../melon_runtime/Timer.js";
-import { forarr, foreach } from "../../../melon_runtime/Attibute.js";
+import { BitmapData, MaxRectsBinPack } from "../../core/BitmapData.js";
 import { context3D } from "../stage3D/Stage3D.js";
+import { ImageSource } from "./ImageSource.js";
+import { CubeSource } from "./CubeSource.js";
+import { getTextureData } from "../stage3D/Context3D.js";
 
 export interface IBitmapSourceVO extends IUVFrame {
     source: BitmapSource;
@@ -21,12 +20,11 @@ export interface IBitmapSourceVO extends IUVFrame {
 
 }
 
-export class BitmapSource extends MiniDispatcher {
-    name: string;
+
+export class BitmapSource extends ImageSource {
 
     width = 0;
     height = 0;
-    bmd: BitmapData | HTMLImageElement;
     frames: { [key: string]: IBitmapSourceVO } = {};
 
     origin: number[];
@@ -34,13 +32,10 @@ export class BitmapSource extends MiniDispatcher {
     autopack: boolean;
     maxRect: MaxRectsBinPack;
 
-    status = LoadStates.WAIT;
 
     // textures: { [key: string]: Texture } = {};
     // texture: Texture;
-    // textureData: ITextureData;
-
-    completeFuncs: Function[];
+    textureData: ITextureData;
 
     constructor(name: string, autopack = false) {
         super();
@@ -48,36 +43,10 @@ export class BitmapSource extends MiniDispatcher {
         this.autopack = autopack;
     }
 
-    load(prefix: string, url: string) {
-        this.name = url;
-        this.autopack = false;
-        this.status = LoadStates.LOADING;
-        loadRes(prefix, url, this.loadImageComplete, this, ImageLoader);
-    }
-
-    loadImageComplete(event: EventX) {
-
-        if (event.type != EventT.COMPLETE) {
-            this.status = LoadStates.FAILED;
-            return;
-        }
-
-        this.create(event.data);
-
-        forarr(this.completeFuncs, v => {
-            v(this);
-            return true;
-        })
-
-        this.simpleDispatch(EventT.COMPLETE, this);
-
-
-    }
 
     create(bmd: BitmapData | HTMLImageElement) {
-        this.status = LoadStates.COMPLETE;
+        super.create(bmd);
 
-        this.bmd = bmd;
         let { width, height } = bmd;
         this.width = width;
         this.height = height;
@@ -180,7 +149,7 @@ export class BitmapSource extends MiniDispatcher {
 
 export function createBitmapSource(name: string, w: number, h: number, origin?: boolean) {
     console.log(`createBitmapSource ${name} ${w} x ${h}`);
-    let source = bitmapSources[name];
+    let source = bitmapSources[name] as BitmapSource;
     if (source) {
         return source;
     }
@@ -188,6 +157,8 @@ export function createBitmapSource(name: string, w: number, h: number, origin?: 
     let bmd = new BitmapData(w, h, true);
     source = new BitmapSource(name, true).create(bmd);
 
+    source.textureData = getTextureData(name,false);
+    
     if (origin) {
         let vo = source.getEmptySourceVO("origin", 1, 1);
         //"#FFFFFF"
@@ -195,12 +166,14 @@ export function createBitmapSource(name: string, w: number, h: number, origin?: 
         source.origin = [vo.ul, vo.vt];
     }
 
+    bitmapSources[name] = source;
+
     return source;
 }
 
 
 export function loadBitmapSource(prefix: string, url: string, complete?: Function) {
-    let source = bitmapSources[url];
+    let source = bitmapSources[url] as BitmapSource;
 
     if (!source) {
         bitmapSources[url] = source = new BitmapSource(url, false);
@@ -230,6 +203,39 @@ export function loadBitmapSource(prefix: string, url: string, complete?: Functio
 }
 
 
+
+export function loadCubeSource(prefix: string, url: string, complete?: Function, type = ".jpg") {
+    let source = bitmapSources[url] as CubeSource;
+
+    if (!source) {
+        bitmapSources[url] = source = new CubeSource();
+        source.load(prefix, url, type);
+    } else if (source.status == LoadStates.WAIT) {
+        source.load(prefix, url, type);
+    }
+
+    if (complete && source.status == LoadStates.COMPLETE) {
+        complete(source);
+        return source;
+    }
+
+    if (complete) {
+        let completes = source.completeFuncs;
+
+        if (!completes) {
+            source.completeFuncs = completes = [];
+        }
+
+        if (completes.indexOf(complete) == -1) {
+            completes.push(complete);
+        }
+    }
+
+    return source;
+}
+
+
+
 export function refreshUV(vo: IUVFrame, mw: number, mh: number) {
     const { x, y, w, h } = vo;
     vo.ul = x / mw;
@@ -240,6 +246,6 @@ export function refreshUV(vo: IUVFrame, mw: number, mh: number) {
 
 
 
-export var bitmapSources: { [key: string]: BitmapSource } = {};
+export var bitmapSources: { [key: string]: ImageSource } = {};
 export var componentSource = createBitmapSource("component", 1024, 1024, true);
 export var textSource = createBitmapSource("textsource", 1024, 1024, true);

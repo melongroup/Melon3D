@@ -1,6 +1,5 @@
 import { UniformProperty } from "../../display/stage3D/Attibute.js";
 import { Renderer } from "../../display/stage3D/Renderer.js";
-import { foreach } from "../../../melon_runtime/Attibute.js";
 
 export class BitmapRender extends Renderer {
 
@@ -27,6 +26,10 @@ export class BitmapRender extends Renderer {
 
     @UniformProperty()
     metallicRoughnessAoTexture: ITextureData;
+    
+
+    @UniformProperty()
+    skyboxTexture: ITextureData;
 
 
     metallic: number;

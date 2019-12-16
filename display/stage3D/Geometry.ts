@@ -26,6 +26,11 @@ export let vertex_mesh_variable: IVariables = {
     "data32PerVertex": { size: 8, offset: 0 }
 }
 
+export let skybox_variable: IVariables = {
+    "pos": { size: 3, offset: 0 },
+    "data32PerVertex": { size: 3, offset: 0 }
+}
+
 
 export let vertex_mesh_full_variable: IVariables = {
     "pos": { size: 3, offset: 0 },
@@ -824,3 +829,57 @@ export class SphereGeometry extends Geometry {
 //         return this;
 //     }
 // }
+
+export class SkyBoxGeometry extends Geometry {
+
+    create(size = 100, variables = skybox_variable) {
+        const vertices = [
+            // front face
+            -size, size, size,
+            -size, -size, size,
+            size, -size, size,
+            size, size, size,
+
+            // back face
+            size, size, -size,
+            size, -size, -size,
+            -size, -size, -size,
+            -size, size, -size,
+
+            // left face
+            -size, size, -size,
+            -size, -size, -size,
+            -size, -size, size,
+            -size, size, size,
+
+            // right face
+            size, size, size,
+            size, -size, size,
+            size, -size, -size,
+            size, size, -size,
+
+            // top face
+            -size, size, -size,
+            -size, size, size,
+            size, size, size,
+            size, size, -size,
+
+            // bottom face
+            -size, -size, size,
+            -size, -size, -size,
+            size, -size, -size,
+            size, -size, size,
+        ];
+
+        empty_float32_pos.set(vertices);
+
+        let numVertices = 24;
+        let data32PerVertex = variables.data32PerVertex.size;
+        let vertex = createGeometryVertex(empty_float32_object, variables, numVertices);
+
+        this.setData({ variables, vertex, data32PerVertex, numVertices });
+
+        return this;
+
+    }
+}
