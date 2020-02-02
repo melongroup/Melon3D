@@ -36,7 +36,7 @@ export class Camera extends Transform {
     }
 
     updateWorldMatrix(updateStatus?: number) {
-        if (this.status | DChange.trasnform) {
+        if (this.status | DChange.TRANSFORM) {
             this.updateLocalMatrix();
             this.worldMatrix.m3_invert(this.localMatrix);
             // this.sceneMatrix.m3_append(this.contextMatrix);
@@ -57,7 +57,7 @@ export function CameraUIResize(width: number, height: number, len: IMatrix3D, fa
         camera.w = width;
         camera.h = height;
         camera.far = far;
-        camera.status |= DChange.trasnform;
+        camera.status |= DChange.TRANSFORM;
         camera.isOrthographicCamera = true;
         camera.isPerspectiveCamera = false;
     }
@@ -92,7 +92,7 @@ export function CameraOrthResize(width: number, height: number, len: IMatrix3D, 
         camera.w = width;
         camera.h = height;
         camera.far = far;
-        camera.status |= DChange.trasnform;
+        camera.status |= DChange.TRANSFORM;
         camera.isOrthographicCamera = true;
         camera.isPerspectiveCamera = false;
     }
@@ -129,7 +129,7 @@ export function Camera3DResize(width: number, height: number, len: IMatrix3D, fa
         camera.h = height;
         camera.far = far;
         camera.originFar = originFar = far / PI2;
-        camera.status |= DChange.trasnform;
+        camera.status |= DChange.TRANSFORM;
         camera.isPerspectiveCamera = true;
         camera.isOrthographicCamera = false;
     }
@@ -198,7 +198,7 @@ export function PerspectiveResize(width: number, height: number, len: IMatrix3D,
         camera.originFar = 0.5 * height * yScale;
         camera.logDepthFar = 1.0 / (Math.log(camera.far + 1.0) / Math.LN2);
 
-        camera.status |= DChange.trasnform;
+        camera.status |= DChange.TRANSFORM;
         camera.isPerspectiveCamera = true;
         camera.isOrthographicCamera = false;
     }

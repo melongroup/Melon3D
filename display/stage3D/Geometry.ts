@@ -452,11 +452,6 @@ export class Geometry extends ShaderParamTarget implements IGeometryItem {
     // numVertices = 0;
     numTriangles = 0;
 
-    constructor() {
-        super();
-    }
-
-
     setData(data: IGeometry) {
 
         this.data = data;

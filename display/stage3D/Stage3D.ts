@@ -18,7 +18,7 @@ export var camera:Camera;
 
 export function setCamera(c:Camera){
     camera = c;
-    globalThis.camera = c;
+    // globalThis.camera = c;
 }
 
 export class Stage3D extends Sprite{

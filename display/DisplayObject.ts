@@ -6,9 +6,9 @@ export class DisplayObject extends Transform {
     parent: DisplayObject;
 
     _alpha = 1.0;
-    sceneAlpha = 1.0;
+    worldAlpha = 1.0;
 
-    invSceneMatrix: IMatrix3D;
+    // invSceneMatrix: IMatrix3D;
 
     filters: { [key: string]: FilterBase } = {}
 
@@ -20,20 +20,20 @@ export class DisplayObject extends Transform {
     updateWorldMatrix(updateStatus = 0, parentSceneTransform?: IMatrix3D) {
 
         let { status, parent } = this;
-        if (status & DChange.alpha) {
-            updateStatus |= DChange.alpha;
-            this.status &= ~DChange.alpha;
+        if (status & DChange.ALPHA) {
+            updateStatus |= DChange.ALPHA;
+            this.status &= ~DChange.ALPHA;
         }
 
-        if (updateStatus & DChange.alpha) {
+        if (updateStatus & DChange.ALPHA) {
             if (parent) {
-                this.sceneAlpha = parent.sceneAlpha * this._alpha;
+                this.worldAlpha = parent.worldAlpha * this._alpha;
             } else {
-                this.sceneAlpha = this._alpha;
+                this.worldAlpha = this._alpha;
             }
         }
 
-        super.updateWorldMatrix(updateStatus, parentSceneTransform);
+        updateStatus |= super.updateWorldMatrix(updateStatus, parentSceneTransform);
 
         return updateStatus;
     }

@@ -18,11 +18,15 @@ export interface IStageRenderOption extends IRenderOption {
     program: Program3D;
     shaderParmas: IShaderParamTarget[];
 
-    renderer: Renderer
+    renderer: Renderer;
 
     cameraPos: IVector3D;
     lightDirection: IVector3D;
-    
+
+    uivc: Float32Array;
+
+    [key: string]: any;
+
 
 
     // ambientTexutre: BitmapSource;
@@ -104,13 +108,18 @@ export class Renderer extends ShaderParamTarget {
 
 
 
-    createProgram(c: Context3D, vertexCode: string, fargmentCode: string, key: string) {
+    createProgram(option: IStageRenderOption, material: Material) {
 
+        let key = material.getKey(option);
+        let c = option.context;
 
-
-
-
-        let program = c.createProgram(vertexCode, fargmentCode, key);
+        let program = c.programs[key];
+        if (undefined === program) {
+            let vertexCode = material.replaceVertexCode(option);
+            let fargmentCode = material.replaceFargementCode(option);
+            program = c.createProgram(vertexCode, fargmentCode, key);
+        }
+        
         this.program = program;
         return program;
     }
@@ -129,28 +138,24 @@ export class Renderer extends ShaderParamTarget {
             return true;
         }
 
-        let c = context3D;
-        let { program } = this;
-        if (!program) {
-            let { vertexCode, fargmentCode, key } = material;
-            program = this.createProgram(c, vertexCode, fargmentCode, key)
-        }
-
-        c.setProgram(program);
-
-
         option.renderer = this;
-
-
-
-        // updateUniforms
-
         let list = option.shaderParmas;
         list[0] = geometry;
         list[1] = material;
         list[2] = target;
         list[3] = this;
 
+
+
+        let c = context3D;
+        let { program } = this;
+        if (!program) {
+            program = this.createProgram(option, material)
+        }
+
+        c.setProgram(program);
+
+        // updateUniforms
         option.program = program;
         this.updateShaderParam(option);
 

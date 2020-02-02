@@ -1,7 +1,7 @@
 import { m2dTransform } from "../core/Geom.js";
 import { Sprite } from "./Sprite.js";
 import { empty_number_object, geometry_addpoint, createGeometryVertex, empty_float32_object } from "./stage3D/Geometry.js";
-import { IBitmapSourceVO } from "./source/BitmapSource.js";
+import { IBitmapSourceVO, bitmapSources, BitmapSource } from "./source/BitmapSource.js";
 
 export class Graphics {
 
@@ -72,7 +72,7 @@ export class Graphics {
 
 
     drawRect(x: number, y: number, width: number, height: number, color: number, alpha = 1, z = 0, matrix?: IMatrix) {
-        const [originU, originV] = this.target.source.origin;
+        const [originU, originV] = (bitmapSources[this.target.source.url] as BitmapSource).origin;
 
         console.log("drawImg UV", originU, originV);
 
@@ -127,10 +127,10 @@ export class Graphics {
             ]
             ,
             [
-                [ul,vt],
-                [ur,vt],
-                [ur,vb],
-                [ul,vb]
+                [ul, vt],
+                [ur, vt],
+                [ur, vb],
+                [ul, vb]
             ]
             , color, alpha, matrix
         )

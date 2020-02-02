@@ -47,14 +47,21 @@ declare module Zlib {
 }
 
 declare const enum DChange {
-    trasnform = 0b1,
-    HIT_AREA = trasnform << 1,
-    alpha = HIT_AREA << 1,
+    TRANSFORM = 0b1,
+    HIT_AREA = TRANSFORM << 1,
+    ALPHA = HIT_AREA << 1,
 
-    vertex = alpha << 1,
+    VERTEX = ALPHA << 1,
+    VERTEX_OR = ~VERTEX,
+
+    // VC_DATA = VERTEX << 1,
+    // VC_DATA_OR = ~VC_DATA,
+
+    BATCH_DATA = VERTEX,
+    BATCH_DATA_OR = ~BATCH_DATA,
 
     //底层transfrom改变 child transform = ct;
-    CHILD_TRANSFROM = vertex << 1,
+    CHILD_TRANSFROM = VERTEX << 1,
     //底层htiArea改变
     CHILD_HITAREA = CHILD_TRANSFROM << 1,
     //底层Alpha变化
@@ -673,6 +680,7 @@ declare interface IGeometry {
 declare interface IGraphicsGeometry extends IGeometry {
     preNumVertices?: number;
     batched?: boolean;
+    offset?: number;
 }
 
 
@@ -722,4 +730,24 @@ declare interface IShaderCode {
     def: string;
     func: string;
     code: string;
+}
+
+
+declare interface IRenderer {
+    __renderNext: IRenderer;
+    renderInfo: IRendererInfo;
+    render(option: IRenderOption): void;
+}
+
+declare interface IRendererInfo {
+    renderer: IRenderer;
+
+    batch: { status: number; invWorldMatrix: ArrayLike<number> };
+
+    enabled: boolean;
+
+    graphicsnext?: IRenderer;
+
+    source?: number;
+    vc?: number;
 }

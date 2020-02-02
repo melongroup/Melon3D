@@ -1,5 +1,5 @@
-import { STweenBase } from "../../core/Tween";
-import { IStageRenderOption } from "../stage3D/Renderer";
+import { STweenBase } from "../../core/Tween.js";
+import { IStageRenderOption } from "../stage3D/Renderer.js";
 
 export class FilterBase extends STweenBase implements IShaderSetting {
     constructor(type: string) {

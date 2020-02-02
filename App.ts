@@ -7,10 +7,8 @@ import { tweenUpdate } from "./core/Tween.js";
 import { Mouse } from "./display/Mouse.js";
 import { Sprite } from "./display/Sprite.js";
 import { IStageRenderOption } from "./display/stage3D/Renderer.js";
-import { context3D, ROOT, Stage3D, camera } from "./display/stage3D/Stage3D.js";
+import { camera, context3D, ROOT, Stage3D } from "./display/stage3D/Stage3D.js";
 import { addResize, Engine } from "./Engine.js";
-
-
 
 export var renderOption = { now: 0, interval: 0, shaderParmas: [], lightDirection: newVector3D(1, 1, -1, 1) } as IStageRenderOption;
 
@@ -45,6 +43,7 @@ export class App extends Sprite {
 
 
 
+
         //初始化所有需求的属性
 
         // this.initCanvas(canvas);
@@ -60,6 +59,10 @@ export class App extends Sprite {
 
         // ROOT.addEventListener(EngineEvent.FPS_CHANGE,this.gcChangeHandler,this);
         // this.nextGCTime = engineNow + this.gcDelay;
+
+        // for (let i = 0; i < context3D.webglParamsInfo.texture; i++) {
+
+        // }
 
 
     }

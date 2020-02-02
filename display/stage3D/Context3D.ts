@@ -572,7 +572,7 @@ export class Context3D {
 			if (program == this.cProgram) return 1;
 		}
 
-		if(this.cProgram != program){
+		if (this.cProgram != program) {
 
 		}
 
@@ -761,11 +761,17 @@ export class Context3D {
 		if (!texture) {
 			let source = bitmapSources[url];
 
-			if(source.status != LoadStates.COMPLETE){
+			if (source.status != LoadStates.COMPLETE) {
 				return false;
 			}
 
-			this.textureObj[key] = texture = this.createTexture(data, source.bmd);
+			if (info.type == WebGLConst.SAMPLER_2D) {
+				this.textureObj[key] = texture = this.createTexture(data, source.bmd);
+			} else if (info.type == WebGLConst.SAMPLER_CUBE) {
+				this.textureObj[key] = texture = this.createCubeTexture(data);
+			}
+
+
 		}
 
 		if (!texture.readly) {

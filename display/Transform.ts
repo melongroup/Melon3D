@@ -28,6 +28,7 @@ export class Transform extends ShaderParamTarget {
 
     localMatrix: IMatrix3D;
     worldMatrix: IMatrix3D;
+    invWorldMatrix: IMatrix3D;
 
     status = 0;
 
@@ -63,15 +64,15 @@ export class Transform extends ShaderParamTarget {
             str += "_hitarea"
         }
 
-        if (status & DChange.vertex) {
+        if (status & DChange.VERTEX) {
             str += "_vertex"
         }
 
-        if (status & DChange.alpha) {
+        if (status & DChange.ALPHA) {
             str += "_alpha"
         }
 
-        if (status & DChange.trasnform) {
+        if (status & DChange.TRANSFORM) {
             str += "_trasnform"
         }
 
@@ -106,12 +107,12 @@ export class Transform extends ShaderParamTarget {
         if (!parent) return;
 
         let statues = parent.status;
-        if (value & DChange.trasnform) {
+        if (value & DChange.TRANSFORM) {
             statues |= DChange.CHILD_TRANSFROM;
         }
 
-        if (value & DChange.vertex) {
-            statues |= DChange.vertex;
+        if (value & DChange.VERTEX) {
+            statues |= DChange.VERTEX;
         }
 
         value = value &= DChange.CHILD_ALL;
@@ -124,7 +125,7 @@ export class Transform extends ShaderParamTarget {
     set visible(value: boolean) {
         if (this._visible != value) {
             this._visible = value;
-            this.setChange(DChange.vertex)
+            this.setChange(DChange.VERTEX)
         }
     }
 
@@ -133,12 +134,12 @@ export class Transform extends ShaderParamTarget {
         if (this._scaleX == value) return;
         this._scaleX = value;
         this.sca.x = value;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
     get scaleY(): number { return this._scaleY; }
-    set scaleY(value: number) { this._scaleY = value; this.sca.y = value; this.setChange(DChange.trasnform); }
+    set scaleY(value: number) { this._scaleY = value; this.sca.y = value; this.setChange(DChange.TRANSFORM); }
     get scaleZ(): number { return this._scaleZ; }
-    set scaleZ(value: number) { this._scaleZ = value; this.sca.z = value; this.setChange(DChange.trasnform); }
+    set scaleZ(value: number) { this._scaleZ = value; this.sca.z = value; this.setChange(DChange.TRANSFORM); }
     get rotationX(): number { return this._rotationX * RADIANS_TO_DEGREES; }
     get rotationY(): number { return this._rotationY * RADIANS_TO_DEGREES; }
     get rotationZ(): number { return this._rotationZ * RADIANS_TO_DEGREES; }
@@ -147,17 +148,17 @@ export class Transform extends ShaderParamTarget {
     set rotationX(value: number) {
         value %= 360; value *= DEGREES_TO_RADIANS;
         if (value == this._rotationX) return;
-        this._rotationX = value; this.rot.x = value; this.setChange(DChange.trasnform);
+        this._rotationX = value; this.rot.x = value; this.setChange(DChange.TRANSFORM);
     }
     set rotationY(value: number) {
         value %= 360; value *= DEGREES_TO_RADIANS;
         if (value == this._rotationY) return;
-        this._rotationY = value; this.rot.y = value; this.setChange(DChange.trasnform);
+        this._rotationY = value; this.rot.y = value; this.setChange(DChange.TRANSFORM);
     }
     set rotationZ(value: number) {
         value %= 360; value *= DEGREES_TO_RADIANS;
         if (value == this._rotationZ) return;
-        this._rotationZ = value; this.rot.z = value; this.setChange(DChange.trasnform);
+        this._rotationZ = value; this.rot.z = value; this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -168,7 +169,7 @@ export class Transform extends ShaderParamTarget {
     set rotation(value: number) {
         value %= 360; value *= DEGREES_TO_RADIANS;
         if (value == this._rotationZ) return;
-        this._rotationZ = value; this.rot.z = value; this.setChange(DChange.trasnform);
+        this._rotationZ = value; this.rot.z = value; this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -179,17 +180,17 @@ export class Transform extends ShaderParamTarget {
     set x(value: number) {
         if (value == this._x) return;
         this._x = value; this.pos.x = value;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
     set y(value: number) {
         if (value == this._y) return;
         this._y = value; this.pos.y = value;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
     set z(value: number) {
         if (value == this._z) return;
         this._z = value; this.pos.z = value;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -199,7 +200,7 @@ export class Transform extends ShaderParamTarget {
         this.pos.y = this._y = y;
         this.pos.z = this._z = z;
         if (update) {
-            this.setChange(DChange.trasnform);
+            this.setChange(DChange.TRANSFORM);
         }
     }
 
@@ -208,7 +209,7 @@ export class Transform extends ShaderParamTarget {
         this._rotationY = value.y * DEGREES_TO_RADIANS;
         this._rotationZ = value.z * DEGREES_TO_RADIANS;
         if (update) {
-            this.setChange(DChange.trasnform);
+            this.setChange(DChange.TRANSFORM);
         }
     }
 
@@ -233,7 +234,7 @@ export class Transform extends ShaderParamTarget {
         this._x = pos.x;
         this._y = pos.y;
         this._z = pos.z;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -251,7 +252,7 @@ export class Transform extends ShaderParamTarget {
         this._x = this.pos.x;
         this._y = this.pos.y;
         this._z = this.pos.z;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -269,7 +270,7 @@ export class Transform extends ShaderParamTarget {
         this._x = this.pos.x;
         this._y = this.pos.y;
         this._z = this.pos.z;
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
     /**
@@ -284,7 +285,7 @@ export class Transform extends ShaderParamTarget {
         this.rot.y = this._rotationY = ry * DEGREES_TO_RADIANS;
         this.rot.z = this._rotationZ = rz * DEGREES_TO_RADIANS;
         if (update) {
-            this.setChange(DChange.trasnform);
+            this.setChange(DChange.TRANSFORM);
         }
     }
 
@@ -301,7 +302,7 @@ export class Transform extends ShaderParamTarget {
         this.rot.y = this._rotationY = ry;
         this.rot.z = this._rotationZ = rz;
         if (update) {
-            this.setChange(DChange.trasnform);
+            this.setChange(DChange.TRANSFORM);
         }
     }
 
@@ -322,7 +323,7 @@ export class Transform extends ShaderParamTarget {
         this.sca.y = this._scaleY = sy;
         this.sca.z = this._scaleZ = sz;
         if (update) {
-            this.setChange(DChange.trasnform);
+            this.setChange(DChange.TRANSFORM);
         }
     }
 
@@ -354,7 +355,7 @@ export class Transform extends ShaderParamTarget {
         this._scaleY = sca.y;
         this._scaleZ = sca.z;
 
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
 
@@ -414,7 +415,7 @@ export class Transform extends ShaderParamTarget {
             if (!child.stage) {
                 child.stage = stage;
                 child.addToStage();
-                if(child.status){
+                if (child.status) {
                     child.setChange(child.status);
                 }
             }
@@ -468,11 +469,11 @@ export class Transform extends ShaderParamTarget {
     }
 
     protected __afterAddChild(child: Transform) {
-        child.setChange(DChange.vertex | child.status);
+        child.setChange(DChange.VERTEX | child.status);
     }
 
     protected __afterRemoveChild(child?: Transform) {
-        this.setChange(DChange.vertex);
+        this.setChange(DChange.VERTEX);
     }
 
     removeFromStage() {
@@ -515,7 +516,7 @@ export class Transform extends ShaderParamTarget {
         localMatrix.m3_recompose(this.pos, this.rot, this.sca)
         // }
 
-        this.status &= ~DChange.trasnform;
+        this.status &= ~DChange.TRANSFORM;
     }
 
     /**
@@ -523,30 +524,34 @@ export class Transform extends ShaderParamTarget {
      * 
      */
     updateWorldMatrix(updateStatus = 0, parentSceneTransform?: IMatrix3D) {
-        let { status, parent, childrens, worldMatrix: sceneMatrix } = this;
-        if (status & DChange.trasnform) {
+        let { status, parent, childrens, worldMatrix, invWorldMatrix } = this;
+        if (status & DChange.TRANSFORM) {
             this.updateLocalMatrix();
-            updateStatus |= DChange.trasnform;
+            updateStatus |= DChange.TRANSFORM;
         }
 
-        if (updateStatus & DChange.trasnform) {
+        if (updateStatus & DChange.TRANSFORM) {
             if (parentSceneTransform) {
-                sceneMatrix.m3_append(parentSceneTransform, false, this.localMatrix);
+                worldMatrix.m3_append(parentSceneTransform, false, this.localMatrix);
             } else {
                 if (parent) {
-                    sceneMatrix.m3_append(parent.worldMatrix, false, this.localMatrix);
+                    worldMatrix.m3_append(parent.worldMatrix, false, this.localMatrix);
                 } else {
-                    sceneMatrix.set(this.localMatrix);
+                    worldMatrix.set(this.localMatrix);
                 }
             }
-            status |= DChange.CHILD_TRANSFROM
+            status |= DChange.CHILD_TRANSFROM;
+
+            if (invWorldMatrix) {
+                invWorldMatrix.m3_invert(worldMatrix);
+            }
         }
 
 
         if (status & DChange.CHILD_ALL) {
 
             for (let i = 0; i < childrens.length; i++) {
-                childrens[i].updateWorldMatrix(updateStatus, sceneMatrix);
+                childrens[i].updateWorldMatrix(updateStatus, worldMatrix);
             }
 
             status &= ~DChange.CHILD_ALL;
@@ -560,15 +565,15 @@ export class Transform extends ShaderParamTarget {
 
     dispatchEvent(event: EventX): boolean {
         var bool: boolean = false;
-        let{parent} = this;
+        let { parent } = this;
         if (undefined != this.mEventListeners && event.type in this.mEventListeners) {
             bool = super.dispatchEvent(event);
         }
 
-        if(parent && (false == event.stopImmediatePropagation && event.bubbles)){
+        if (parent && (false == event.stopImmediatePropagation && event.bubbles)) {
             parent.dispatchEvent(event);
         }
-        
+
         return bool;
     }
 
@@ -647,7 +652,7 @@ export class Transform extends ShaderParamTarget {
 
         // this._rotationZ = rot.z = 0;
 
-        this.setChange(DChange.trasnform);
+        this.setChange(DChange.TRANSFORM);
     }
 
 

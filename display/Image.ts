@@ -1,13 +1,15 @@
 import { Sprite } from "./Sprite.js";
 import { getFullUrl, loadRes, Loader } from "../core/Http.js";
 import { EventX } from "../../melon_runtime/MiniDispatcher.js";
-import { componentSource, IBitmapSourceVO } from "./source/BitmapSource.js";
+import { componentSource, IBitmapSourceVO, bitmapSources, BitmapSource } from "./source/BitmapSource.js";
 
 export class Image extends Sprite {
 
     load(perfix: string, url: string) {
 
-        let { source } = this;
+        let { source:sourceData } = this;
+
+        let source = bitmapSources[sourceData.url] as BitmapSource;
 
         let vo = source.frames[url];
 
@@ -26,7 +28,9 @@ export class Image extends Sprite {
         let loader = e.currentTarget as Loader;
         let img = e.data as HTMLImageElement;
 
-        let { source } = this;
+        let { source:sourceData } = this;
+
+        let source = bitmapSources[sourceData.url] as BitmapSource;
 
         let { url } = loader;
 
@@ -43,13 +47,9 @@ export class Image extends Sprite {
     }
 
     draw(vo: IBitmapSourceVO) {
-
         let { graphics: g } = this;
-
         g.clear();
         g.drawBitmap(0, 0, vo);
         g.end();
-
-        console.log("bitmapsource frames",this.source.frames);
     }
 } 
